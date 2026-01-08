@@ -1,8 +1,11 @@
-const { test, expect } = require("@playwright/test");
+import { test, expect} from '@playwright/test';
+import { POManager } from '../pageobjects/POManager';
+const testData = JSON.parse(JSON.stringify(require('../test-utils/practicePOMdata.json')));
 
-test("E-Commerce Functional Test Suite", async ({browser}) => {
-  const context = await browser.newContext();
-  const page = await context.newPage();
+//for(const data of testData){ 
+test.only("E-Commerce Functional Test Suite", async ({ page }) => {
+
+    const poManager = new POManager(page);
   const addItem = [
     "Sauce Labs Bike Light",
     "Sauce Labs Backpack",
@@ -11,13 +14,15 @@ test("E-Commerce Functional Test Suite", async ({browser}) => {
     "Test.allTheThings() T-Shirt (Red)",
     "Sauce Labs Fleece Jacket",
   ];
-  //Login with Valid credentials
-  const user = "standard_user";
-  const password = "secret_sauce";
-  await page.goto("https://www.saucedemo.com/");
-  await page.locator("#user-name").fill(user);
-  await page.fill("#password", password);
-  await page.click("#login-button");
+  //Login Page
+  const loginPage = poManager.getloginPractice();
+  await loginPage.goto();
+  await loginPage.validLogin(user,password);
+  
+//   await page.goto("https://www.saucedemo.com/");
+//   await page.locator("#user-name").fill(user);
+//   await page.fill("#password", password);
+//   await page.click("#login-button");
   //handling js alert
   page.on("dialog", (dialog) => dialog.accept());
   //Add items to cart (shopping page)
@@ -35,7 +40,6 @@ test("E-Commerce Functional Test Suite", async ({browser}) => {
   await page.locator(".shopping_cart_link").click();
   const cartItem = page.locator(".cart_item");
   await cartItem.first().waitFor();
-  ////////////expect(await cartItem.locator('.inventory_item_name').textContent()).toEqual(addItem);
   //remove unwanted item from cart (cart page)
   let cartItems = page.locator(".cart_item_label");
   let count = await cartItems.count();

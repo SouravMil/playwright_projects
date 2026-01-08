@@ -1,6 +1,8 @@
 const { test, expect } = require("@playwright/test");
 
-test("Form Automation & Validation", async ({ page }) => {
+test("Form Automation & Validation", async ({ browser }) => {
+  const context = await browser.newContext();
+  const page = await context.newPage();
   await page.goto("https://demoqa.com/automation-practice-form");
   await page.fill("#firstName", "Robin");
   await page.fill("#lastName", "Hood");

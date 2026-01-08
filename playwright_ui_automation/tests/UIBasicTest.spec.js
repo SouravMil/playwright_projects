@@ -18,7 +18,9 @@ test('@Web Browser context palywright test', async ({browser})=>{
     console.log(await page.locator('.card-body a').nth(1).textContent())
 })
 
-test('@Web Radio button assertion', async ({page})=>{
+test('@Web Radio button assertion', async ({browser})=>{
+    const context = await browser.newContext();
+    const page = await context.newPage();
     const radioUser = await page.locator('.radiotextsty').last()
     const textBlink = page.locator('[href*=documents-request]')
     await page.goto('https://rahulshettyacademy.com/loginpagePractise/')
@@ -28,7 +30,7 @@ test('@Web Radio button assertion', async ({page})=>{
     await page.locator('#terms').click()
     await expect(page.locator('#terms')).toBeChecked()
     await page.locator('#terms').uncheck()
-    await expect(await page.locator('#terms').isChecked()).toBeFalsy()
+    expect(await page.locator('#terms').isChecked()).toBeFalsy()
     await expect(textBlink).toHaveAttribute('class','blinkingText')
     //await page.pause()
 })
