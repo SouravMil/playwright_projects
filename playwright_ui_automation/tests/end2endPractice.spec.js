@@ -1,6 +1,7 @@
 const { test, expect } = require("@playwright/test");
 
 test("Practicing end2end flow of eCommerce", async ({ browser }) => {
+  const validProduct = "Sauce Labs Bolt T-Shirt";
   const context = await browser.newContext();
   const page = await context.newPage();
   const username = "standard_user";
@@ -31,17 +32,42 @@ test("Practicing end2end flow of eCommerce", async ({ browser }) => {
   await page.locator("#login-button").click();
   //handling js alert
   page.on("dialog", (dialog) => dialog.accept());
-  ////////////////////////Buttons are not being clicked. Fix it here.
+  //Clicking addToCart for all the visible products
+  expect(await page.locator(".title").textContent()).toEqual("Products");
   const addToCart = page.locator(".btn_inventory");
-  console.log(await addToCart.count());
-  for (let i = 0; i < await addToCart.count(); i++) {
+  const totalButton = await addToCart.count();
+  for (let i = 0; i < (await addToCart.count()) - 2; i++) {
     await addToCart.nth(i).click();
   }
   await page.locator(".shopping_cart_link").click();
+  expect(await page.locator(".title").textContent()).toEqual("Your Cart");
   const cartItems = page.locator(".cart_item");
+  await page.locator("#continue-shopping").click();
+  for (let i = 0; i < (await addToCart.count()); i++) {
+    if ((await addToCart.nth(i).textContent()) === "Add to cart") {
+      await addToCart.nth(i).click();
+    }
+  }
+  await page.locator(".shopping_cart_link").click();
   await page.pause();
-  console.log(await cartItems.count());
+  expect(await cartItems.count()).toEqual(totalButton);
+  //Remove all invalid products from the shopping-cart
+  const yourCart = page.locator(".cart_item");
+  for (let i = 0; i < (await yourCart.count()); i++) {
+    let cartItemTitle = await yourCart
+      .nth(i)
+      .locator(".cart_item_label")
+      .locator(".inventory_item_name")
+      .textContent();
+    ////Removing items is not working. Fix it here.
+    if (cartItemTitle !== validProduct) {
+      await yourCart
+        .nth(i)
+        .locator(".cart_item_label")
+        .locator(".item_pricebar")
+        .locator("#remove-sauce-labs-backpack")
+        .click();
+    }
+    i = -1;
+  }
 });
-
-
- 
