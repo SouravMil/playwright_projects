@@ -1,7 +1,7 @@
 const { test, expect } = require("@playwright/test");
 
 test("Practicing end2end flow of eCommerce", async ({ browser }) => {
-  const validProduct = "Sauce Labs Bolt T-Shirt";
+  const validProduct = ["Sauce Labs Bolt T-Shirt"];
   const context = await browser.newContext();
   const page = await context.newPage();
   const username = "standard_user";
@@ -52,22 +52,18 @@ test("Practicing end2end flow of eCommerce", async ({ browser }) => {
   await page.pause();
   expect(await cartItems.count()).toEqual(totalButton);
   //Remove all invalid products from the shopping-cart
-  const yourCart = page.locator(".cart_item");
+  let yourCart = page.locator(".cart_item_label");
   for (let i = 0; i < (await yourCart.count()); i++) {
     let cartItemTitle = await yourCart
       .nth(i)
-      .locator(".cart_item_label")
       .locator(".inventory_item_name")
       .textContent();
-    ////Removing items is not working. Fix it here.
-    if (cartItemTitle !== validProduct) {
-      await yourCart
-        .nth(i)
-        .locator(".cart_item_label")
-        .locator(".item_pricebar")
-        .locator("#remove-sauce-labs-backpack")
-        .click();
+
+    if (cartItemTitle !== validProduct[0]) {
+      await yourCart.nth(i).locator(".cart_button").click();
+      yourCart = page.locator(".cart_item_label");
+      i = -1;
     }
-    i = -1;
   }
+  expect(await yourCart.count()).toEqual(validProduct.length);
 });
