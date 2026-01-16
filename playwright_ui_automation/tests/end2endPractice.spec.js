@@ -1,4 +1,4 @@
-const { test, expect } = require("@playwright/test");
+import { test, expect } from "@playwright/test";
 
 test("Practicing end2end flow of eCommerce", async ({ browser }) => {
   const validProduct = ["Sauce Labs Bolt T-Shirt"];
@@ -7,6 +7,7 @@ test("Practicing end2end flow of eCommerce", async ({ browser }) => {
   const username = "standard_user";
   const password = "secret_sauce";
   await page.goto("https://www.saucedemo.com/");
+  ////////////LOGIN PAGE/////////////////////////////
   const credentialTextsUser = await page
     .locator("#login_credentials")
     .innerText();
@@ -30,6 +31,7 @@ test("Practicing end2end flow of eCommerce", async ({ browser }) => {
   const selectedPassword = passwordArr.find((pass) => pass === password);
   await page.locator("#password").fill(selectedPassword);
   await page.locator("#login-button").click();
+  //////////////////////PRODUCT PAGE////////////////////
   //handling js alert
   page.on("dialog", (dialog) => dialog.accept());
   //Clicking addToCart for all the visible products
@@ -39,17 +41,19 @@ test("Practicing end2end flow of eCommerce", async ({ browser }) => {
   for (let i = 0; i < (await addToCart.count()) - 2; i++) {
     await addToCart.nth(i).click();
   }
+  /////////////////////CART PAGE////////////////////////
   await page.locator(".shopping_cart_link").click();
   expect(await page.locator(".title").textContent()).toEqual("Your Cart");
   const cartItems = page.locator(".cart_item");
   await page.locator("#continue-shopping").click();
+  ////////////////////PRODUCT PAGE/////////////////////
   for (let i = 0; i < (await addToCart.count()); i++) {
     if ((await addToCart.nth(i).textContent()) === "Add to cart") {
       await addToCart.nth(i).click();
     }
   }
+  /////////////////////CART PAGE//////////////////////
   await page.locator(".shopping_cart_link").click();
-  await page.pause();
   expect(await cartItems.count()).toEqual(totalButton);
   //Remove all invalid products from the shopping-cart
   let yourCart = page.locator(".cart_item_label");
@@ -66,4 +70,24 @@ test("Practicing end2end flow of eCommerce", async ({ browser }) => {
     }
   }
   expect(await yourCart.count()).toEqual(validProduct.length);
+  await page.locator('#checkout').click();
+  ///////////////////CHECKOUT PAGE//////////////////////
+  await expect(page.locator('.title')).toBeVisible();
+  const visibleCartItemCount = await page.locator('.shopping_cart_badge').textContent();
+  expect(visibleCartItemCount).toEqual(validProduct.length);
+  await page.getByRole('button', {name:'Cancel'}).click();
+  expect(await page.locator('.title').textContent()).toEqual('Checkout: Your Information');
+  await page.locator('#first-name').fill('Steve');
+  await page.locator('#last-name').fill('Michael');
+  await page.locator('#postal-code').fill('411102');
+  await page.locator('#continue').click();
+  ////////////////////SHIPPING CONFIRMATION/////////////////
+  await expect(page.locator('.title')).toBeVisible();
+  const priceTotal = await page.locator('.summary_total_label').textContent();
+  console.log(priceTotal);
+  await page.locator('#finish').click();
+  ////////////////////ORDER CONFIRMATION PAGE//////////////
+  const orderConfirm = await page.locator('.complete-header').textContent();
+  expect(orderConfirm).toContain('Thank you');
+  await expect(page.locator('.btn_primary')).toBeVisible();
 });
