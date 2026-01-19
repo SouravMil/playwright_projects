@@ -70,24 +70,28 @@ test("Practicing end2end flow of eCommerce", async ({ browser }) => {
     }
   }
   expect(await yourCart.count()).toEqual(validProduct.length);
-  await page.locator('#checkout').click();
+  await page.locator("#checkout").click();
   ///////////////////CHECKOUT PAGE//////////////////////
-  await expect(page.locator('.title')).toBeVisible();
-  const visibleCartItemCount = await page.locator('.shopping_cart_badge').textContent();
+  await expect(page.locator(".title")).toBeVisible();
+  const visibleCartItemCount = await page
+    .locator(".shopping_cart_badge")
+    .textContent();
   expect(visibleCartItemCount).toEqual(validProduct.length);
-  await page.getByRole('button', {name:'Cancel'}).click();
-  expect(await page.locator('.title').textContent()).toEqual('Checkout: Your Information');
-  await page.locator('#first-name').fill('Steve');
-  await page.locator('#last-name').fill('Michael');
-  await page.locator('#postal-code').fill('411102');
-  await page.locator('#continue').click();
+  await page.getByRole("button", { name: "Cancel" }).click();
+  expect(await page.locator(".title").textContent()).toEqual(
+    "Checkout: Your Information",
+  );
+  await page.locator("#first-name").fill("Steve");
+  await page.locator("#last-name").fill("Michael");
+  await page.locator("#postal-code").fill("411102");
+  await page.locator("#continue").click();
   ////////////////////SHIPPING CONFIRMATION/////////////////
-  await expect(page.locator('.title')).toBeVisible();
-  const priceTotal = await page.locator('.summary_total_label').textContent();
+  await expect(page.locator(".title")).toBeVisible();
+  const priceTotal = await page.locator(".summary_total_label").textContent();
   console.log(priceTotal);
-  await page.locator('#finish').click();
+  await page.locator("#finish").click();
   ////////////////////ORDER CONFIRMATION PAGE//////////////
-  const orderConfirm = await page.locator('.complete-header').textContent();
-  expect(orderConfirm).toContain('Thank you');
-  await expect(page.locator('.btn_primary')).toBeVisible();
+  const orderConfirm = await page.locator(".complete-header").textContent();
+  expect(orderConfirm).toContain("Thank you");
+  await expect(page.locator("#back-to-products")).toBeVisible();
 });
