@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import end2endPracticeLoginPage from "../pageobjects/end2endPracticeLoginPage";
 
 test("Practicing end2end flow of eCommerce", async ({ browser }) => {
   const validProduct = ["Sauce Labs Bolt T-Shirt"];
@@ -6,31 +7,11 @@ test("Practicing end2end flow of eCommerce", async ({ browser }) => {
   const page = await context.newPage();
   const username = "standard_user";
   const password = "secret_sauce";
-  await page.goto("https://www.saucedemo.com/");
+  ///await page.goto("https://www.saucedemo.com/");
   ////////////LOGIN PAGE/////////////////////////////
-  const credentialTextsUser = await page
-    .locator("#login_credentials")
-    .innerText();
-  //convert text into array
-  const usersArr = credentialTextsUser
-    .split("\n")
-    .map((user) => user.trim())
-    .filter((user) => user !== "Accepted usernames are:");
-  //dynamic user selection
-  const selectedUser = usersArr.find((user) => user === username);
-  await page.locator("#user-name").fill(selectedUser);
-  const credentialTextsPassword = await page
-    .locator(".login_password")
-    .innerText();
-  //convert text into array
-  const passwordArr = credentialTextsPassword
-    .split("\n")
-    .map((pass) => pass.trim())
-    .filter((pass) => pass !== "Password for all users:");
-  //dynamic password
-  const selectedPassword = passwordArr.find((pass) => pass === password);
-  await page.locator("#password").fill(selectedPassword);
-  await page.locator("#login-button").click();
+  const loginPage = new end2endPracticeLoginPage(page);
+  loginPage.hitUrl();
+  loginPage.validLogin(username,password);
   //////////////////////PRODUCT PAGE////////////////////
   //handling js alert
   page.on("dialog", (dialog) => dialog.accept());
@@ -76,7 +57,7 @@ test("Practicing end2end flow of eCommerce", async ({ browser }) => {
   const visibleCartItemCount = await page
     .locator(".shopping_cart_badge")
     .textContent();
-  expect(visibleCartItemCount).toEqual(validProduct.length);
+  expect(Number(visibleCartItemCount)).toEqual(validProduct.length);
   await page.getByRole("button", { name: "Cancel" }).click();
   expect(await page.locator(".title").textContent()).toEqual(
     "Checkout: Your Information",

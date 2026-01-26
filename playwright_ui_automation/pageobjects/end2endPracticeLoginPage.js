@@ -31,5 +31,7 @@ class end2endPracticeLoginPage {
     //dynamic password
     const selectedPassword = passwordArr.find((pass) => pass === password);
     await this.passWord.fill(selectedPassword);
+    await this.signInButton.click();
   }
 }
+export default end2endPracticeLoginPage;
