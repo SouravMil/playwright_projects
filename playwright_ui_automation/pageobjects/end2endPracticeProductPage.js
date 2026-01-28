@@ -22,5 +22,9 @@ class end2endPracticeProductPage {
       }
     }
   }
+  async totalVisibleProducts()
+  {
+    return await this.addToCart.count();
+  }
 }
 export default end2endPracticeProductPage;

@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import end2endPracticeLoginPage from "../pageobjects/end2endPracticeLoginPage";
 import end2endPracticeProductPage from "../pageobjects/end2endPracticeProductPage";
+import end2endPracticeCartPage from "../pageobjects/end2endPracticeCartPage";
 
 test("Practicing end2end flow of eCommerce", async ({ browser }) => {
   const validProduct = ["Sauce Labs Bolt T-Shirt"];
@@ -18,32 +19,19 @@ test("Practicing end2end flow of eCommerce", async ({ browser }) => {
   const productPage = new end2endPracticeProductPage(page);
   await productPage.productPageValidation();
   await productPage.addProductsToCart();
+  const totalProductsInShoppingPage = await productPage.totalVisibleProducts();
   /////////////////////CART PAGE////////////////////////
-  await page.locator(".shopping_cart_link").click();
-  expect(await page.locator(".title").textContent()).toEqual("Your Cart");
-  const cartItems = page.locator(".cart_item");
-  await page.locator("#continue-shopping").click();
+  const cartPage = new end2endPracticeCartPage(page);
+  await cartPage.validateCartPageLanding();
+  await cartPage.backToShopping();
   ////////////////////PRODUCT PAGE/////////////////////
   await productPage.addRemainingToCart();
   /////////////////////CART PAGE//////////////////////
-  await page.locator(".shopping_cart_link").click();
-  expect(await cartItems.count()).toEqual(totalButton);
+  await cartPage.returnToCartPage();
+  const totalItemsInCart = await cartPage.cartItemsCount();
+  expect(totalItemsInCart).toEqual(totalProductsInShoppingPage);
   //Remove all invalid products from the shopping-cart
-  let yourCart = page.locator(".cart_item_label");
-  for (let i = 0; i < (await yourCart.count()); i++) {
-    let cartItemTitle = await yourCart
-      .nth(i)
-      .locator(".inventory_item_name")
-      .textContent();
-
-    if (cartItemTitle !== validProduct[0]) {
-      await yourCart.nth(i).locator(".cart_button").click();
-      yourCart = page.locator(".cart_item_label");
-      i = -1;
-    }
-  }
-  expect(await yourCart.count()).toEqual(validProduct.length);
-  await page.locator("#checkout").click();
+  await cartPage.removeExtraFromCart(validProduct);
   ///////////////////CHECKOUT PAGE//////////////////////
   await expect(page.locator(".title")).toBeVisible();
   const visibleCartItemCount = await page
