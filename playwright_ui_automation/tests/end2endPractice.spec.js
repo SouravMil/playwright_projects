@@ -2,6 +2,9 @@ import { test, expect } from "@playwright/test";
 import end2endPracticeLoginPage from "../pageobjects/end2endPracticeLoginPage";
 import end2endPracticeProductPage from "../pageobjects/end2endPracticeProductPage";
 import end2endPracticeCartPage from "../pageobjects/end2endPracticeCartPage";
+import end2endPracticeCheckoutPage from "../pageobjects/end2endPracticeCheckoutPage";
+import end2endPracticeShippingInfoPage from "../pageobjects/end2endPracticeShippingInfoPage";
+import end2endPracticeOrderConfirmPage from "../pageobjects/end2endPracticeOrderConfirmPage";
 
 test("Practicing end2end flow of eCommerce", async ({ browser }) => {
   const validProduct = ["Sauce Labs Bolt T-Shirt"];
@@ -33,28 +36,20 @@ test("Practicing end2end flow of eCommerce", async ({ browser }) => {
   //Remove all invalid products from the shopping-cart
   await cartPage.removeExtraFromCart(validProduct);
   ///////////////////CHECKOUT PAGE//////////////////////
-  await expect(page.locator(".title")).toBeVisible();
-  const visibleCartItemCount = await page
-    .locator(".shopping_cart_badge")
-    .textContent();
-  expect(Number(visibleCartItemCount)).toEqual(validProduct.length);
-  expect(await page.locator(".title").textContent()).toEqual(
-    "Checkout: Your Information",
-  );
-  await page.getByRole("button", { name: "Cancel" }).click();
-  expect(await page.locator(".title").textContent()).toEqual("Your Cart");
-  await page.locator("#checkout").click();
-  await page.locator("#first-name").fill("Steve");
-  await page.locator("#last-name").fill("Michael");
-  await page.locator("#postal-code").fill("411102");
-  await page.locator("#continue").click();
+  const checkoutPage = new end2endPracticeCheckoutPage(page);
+  await checkoutPage.landingCheckoutPage(validProduct);
+  await checkoutPage.returnBackCartPage();
+  await cartPage.validatePageTitle();
+  await checkoutPage.checkoutPageFormfill();
   ////////////////////SHIPPING CONFIRMATION/////////////////
-  await expect(page.locator(".title")).toBeVisible();
-  const priceTotal = await page.locator(".summary_total_label").textContent();
-  console.log(priceTotal);
-  await page.locator("#finish").click();
+  const shippingPage = new end2endPracticeShippingInfoPage(page);
+  await shippingPage.landingShippingInfoPage();
   ////////////////////ORDER CONFIRMATION PAGE//////////////
-  const orderConfirm = await page.locator(".complete-header").textContent();
-  expect(orderConfirm).toContain("Thank you");
-  await expect(page.locator("#back-to-products")).toBeVisible();
+  const orderConfirm = new end2endPracticeOrderConfirmPage(page);
+  await orderConfirm.orderConfirmation();
+  await orderConfirm.backtoShoppingPage();
+  /////////////////PRODUCT PAGE/////////////
+  await productPage.productPageLanding();
+  await productPage.signOut();
+  await loginPage.validateLoginPageLanding();
 });

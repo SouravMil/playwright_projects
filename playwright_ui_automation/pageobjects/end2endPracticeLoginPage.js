@@ -1,3 +1,4 @@
+import{expect} from '@playwright/test';
 class end2endPracticeLoginPage {
   constructor(page) {
     this.page = page;
@@ -32,6 +33,9 @@ class end2endPracticeLoginPage {
     const selectedPassword = passwordArr.find((pass) => pass === password);
     await this.passWord.fill(selectedPassword);
     await this.signInButton.click();
+  }
+  async validateLoginPageLanding() {
+    await expect(this.signInButton).toBeVisible();
   }
 }
 export default end2endPracticeLoginPage;

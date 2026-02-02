@@ -3,12 +3,15 @@ import { expect } from "@playwright/test";
 class end2endPracticeProductPage {
   constructor(page) {
     this.page = page;
-    this.pageTitle = page.locator(".title");
+    this.productPageTitle = page.locator(".title");
     this.addToCart = page.locator(".btn_inventory");
+    this.pageHeader = page.locator(".app_logo");
+    this.sideMenuBar = page.locator("#react-burger-menu-btn");
+    this.signOutButton = page.getByText("Logout", { exact: true });
   }
   async productPageValidation() {
     //Clicking addToCart buttons for all the visible products
-    expect(await this.pageTitle.textContent()).toEqual("Products");
+    expect(await this.productPageTitle.textContent()).toEqual("Products");
   }
   async addProductsToCart() {
     for (let i = 0; i < (await this.addToCart.count()) - 2; i++) {
@@ -22,9 +25,15 @@ class end2endPracticeProductPage {
       }
     }
   }
-  async totalVisibleProducts()
-  {
+  async totalVisibleProducts() {
     return await this.addToCart.count();
+  }
+  async productPageLanding() {
+    expect(await this.pageHeader.textContent()).toEqual("Swag Labs");
+  }
+  async signOut() {
+    await this.sideMenuBar.click();
+    await this.signOutButton.click();
   }
 }
 export default end2endPracticeProductPage;

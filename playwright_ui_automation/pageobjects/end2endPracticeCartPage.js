@@ -38,5 +38,9 @@ class end2endPracticeCartPage {
     expect(await this.itemsAddedtoCart.count()).toEqual(validProduct.length);
     await this.checkOut.click();
   }
+  async validatePageTitle()
+  {
+    expect(await this.cartPageTitle.textContent()).toEqual("Your Cart");
+  }
 }
 export default end2endPracticeCartPage;
