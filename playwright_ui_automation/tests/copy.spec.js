@@ -24,10 +24,23 @@ test("E2E Checkout Flow Automation", async ({ page }) => {
   //Assertion for inventory page visibility after login
   await expect(page.locator(".app_logo")).toContainText("Swag");
   ////Dashboard product page
-  const addButton = page.locator(".btn_inventory");
-  for (let i = 0; i < (await addButton.count()) - 2; i++) {
-    await addButton.nth(i).click();
+  const prodName = page.locator(".inventory_item");
+  for (let i = 0; i < (await prodName.count()); i++) {
+    let nameText = await prodName
+      .nth(i)
+      .locator(".inventory_item_label")
+      .textContent();
+    if (!nameText.includes("Sauce Labs Fleece Jacket")) {
+      await prodName
+        .nth(i)
+        .getByRole("button", { name: "Add to cart" })
+        .click();
+    }
   }
+  // const addButton = page.locator(".btn_primary");
+  // for (let i = 0; i < (await addButton.count()) - 2; i++) {
+  //   await addButton.nth(i).click();
+  // }
   let cartBadge = await page.locator(".shopping_cart_badge").textContent();
   await page.locator(".shopping_cart_link").click();
   ///Your Cart
@@ -35,15 +48,9 @@ test("E2E Checkout Flow Automation", async ({ page }) => {
   expect(await page.locator(".cart_item").count()).toEqual(Number(cartBadge));
   await page.locator("#continue-shopping").click();
   //Product page
-  // const buttonName = page.getByRole("button", { name: "Add to cart" });
-  // for (let i = 0; i < (await buttonName.count()); i++) {
-  //   await buttonName.nth(i).click();
+  // for (let i = 0; i < (await addButton.count()); i++) {
+  //   await addButton.nth(i).click();
   // }
-  while (
-    (await page.getByRole("button", { name: "Add to cart" }).count()) > 0
-  ) {
-    await page.getByRole("button", { name: "Add to cart" }).first().click();
-  }
   cartBadge = await page.locator(".shopping_cart_badge").textContent();
   await page.locator(".shopping_cart_link").click();
   //Your Cart
@@ -57,9 +64,6 @@ test("E2E Checkout Flow Automation", async ({ page }) => {
       .textContent();
     if (itemName !== validProduct) {
       await cartProductList.nth(j).locator(".btn_secondary").click();
-      if ((await cartProductList.count()) === 1) {
-        break;
-      }
     }
     cartProductList = page.locator(".cart_item_label");
     j = -1;
