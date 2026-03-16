@@ -27,6 +27,7 @@ test("api chaining request", async () => {
 
   //====================GET request==========================
 
+  
   const getResponse = await apiContext.get(
     `https://api.restful-api.dev/objects?id=${latestId}`
   );

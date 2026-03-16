@@ -30,7 +30,7 @@ test.beforeAll("api actions", async () => {
     {
       data: orderPayload,
       headers: {
-        Authorization: authToken,
+        'Authorization': authToken,
         "Content-type": "application/json",
       },
     }

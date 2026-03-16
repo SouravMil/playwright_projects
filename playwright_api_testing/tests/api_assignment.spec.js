@@ -9,7 +9,7 @@ test('api CRUD operation',async()=>
         data: 
         {
             title: 'Certified motherboard',
-            body: 'This is about the most talented CM of WB',
+            body: 'This is about the latest tech in chipset',
             userId: 1
         }
     });
