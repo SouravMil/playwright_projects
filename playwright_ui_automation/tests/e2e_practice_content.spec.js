@@ -1,7 +1,11 @@
 import { test, expect } from "@playwright/test";
+const dataSet = JSON.parse(
+  JSON.stringify(require("../test-utils/practicePOMdata.json")),
+);
 
-test("E2E Checkout Flow Automation", async ({ page }) => {
-  const validProduct = "Test.allTheThings() T-Shirt (Red)";
+for(const data of dataSet)
+{test(`E2E Checkout Flow Automation for ${data.item}`, async ({ page }) => {
+  //const validProduct = "Test.allTheThings() T-Shirt (Red)";
   // const context = await browser.newContext();
   // const page = await context.newPage();
   //Login url
@@ -35,10 +39,6 @@ test("E2E Checkout Flow Automation", async ({ page }) => {
   expect(await page.locator(".cart_item").count()).toEqual(Number(cartBadge));
   await page.locator("#continue-shopping").click();
   //Product page
-  // const buttonName = page.getByRole("button", { name: "Add to cart" });
-  // for (let i = 0; i < (await buttonName.count()); i++) {
-  //   await buttonName.nth(i).click();
-  // }
   while (
     (await page.getByRole("button", { name: "Add to cart" }).count()) > 0
   ) {
@@ -55,7 +55,7 @@ test("E2E Checkout Flow Automation", async ({ page }) => {
       .nth(j)
       .locator(".inventory_item_name")
       .textContent();
-    if (itemName !== validProduct) {
+    if (itemName !== data.item) {
       await cartProductList.nth(j).locator(".btn_secondary").click();
       if ((await cartProductList.count()) === 1) {
         break;
@@ -92,3 +92,4 @@ test("E2E Checkout Flow Automation", async ({ page }) => {
   await page.close();
   console.log("Order completed successfully via Playwright automation");
 });
+}
