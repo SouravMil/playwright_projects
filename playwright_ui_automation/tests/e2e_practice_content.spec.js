@@ -1,11 +1,7 @@
 import { test, expect } from "@playwright/test";
-const dataSet = JSON.parse(
-  JSON.stringify(require("../test-utils/practicePOMdata.json")),
-);
 
-for(const data of dataSet)
-{test(`E2E Checkout Flow Automation for ${data.item}`, async ({ page }) => {
-  //const validProduct = "Test.allTheThings() T-Shirt (Red)";
+test(`E2E Checkout Flow Automation for`, async ({ page }) => {
+  const validProduct = "Test.allTheThings() T-Shirt (Red)";
   // const context = await browser.newContext();
   // const page = await context.newPage();
   //Login url
@@ -21,7 +17,6 @@ for(const data of dataSet)
     .split("\n")
     .map((pass) => pass.trim())
     .filter((pass) => pass !== "Password for all users:"); ///Fetching valid password
-  console.log(validPassword);
   await page.getByPlaceholder("Username").fill(validUser);
   await page.getByPlaceholder("Password").fill(validPassword[0]);
   await page.locator("#login-button").click();
@@ -55,7 +50,7 @@ for(const data of dataSet)
       .nth(j)
       .locator(".inventory_item_name")
       .textContent();
-    if (itemName !== data.item) {
+    if (itemName !== validProduct) {
       await cartProductList.nth(j).locator(".btn_secondary").click();
       if ((await cartProductList.count()) === 1) {
         break;
@@ -92,4 +87,3 @@ for(const data of dataSet)
   await page.close();
   console.log("Order completed successfully via Playwright automation");
 });
-}

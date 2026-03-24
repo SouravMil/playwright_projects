@@ -1,18 +1,20 @@
-[{
-    "item": "Sauce Labs Bike Light"
-},
-{
-    "item": "Sauce Labs Backpack"
-},
-{
-    "item": "Sauce Labs Bolt T-Shirt"
-},
-{
-    "item": "Sauce Labs Onesie"
-},
-{
-    "item": "Test.allTheThings() T-Shirt (Red)"
-},
-{
-    "item" : "Sauce Labs Fleece Jacket"
-}]
+[
+    {
+        "item": "Sauce Labs Bike Light"
+    },
+    {
+        "item": "Sauce Labs Backpack"
+    },
+    {
+        "item": "Sauce Labs Bolt T-Shirt"
+    },
+    {
+        "item": "Sauce Labs Onesie"
+    },
+    {
+        "item": "Test.allTheThings() T-Shirt (Red)"
+    },
+    {
+        "item": "Sauce Labs Fleece Jacket"
+    }
+]
