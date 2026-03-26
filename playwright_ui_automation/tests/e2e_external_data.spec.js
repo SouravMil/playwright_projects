@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test";
-const dataSet = JSON.parse(
-  JSON.stringify(require("../test-utils/practicePOMdata.json")),
-);
+import dataSet from "../test-utils/sauceDemoProducts.json";
+// const dataSet = JSON.parse(
+//   JSON.stringify(require("../test-utils/practicePOMdata.json")),
+// );
 
 for (const data of dataSet) {
   test(`E2E Checkout Flow Automation for ${data.item}`, async ({ page }) => {
